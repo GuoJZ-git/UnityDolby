@@ -1,0 +1,351 @@
+﻿using System;
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine.Video;
+using UnityEngine.UI;
+using TMPro;
+
+public class VideoPlayerControl : MonoBehaviour
+{
+  //public static VideoPlayerControl Instance;
+  //图像
+  public RawImage m_image;
+  //播放器
+  public VideoPlayer m_vPlayer;
+  //播放
+  public Button m_btnPlay;
+  //暂停
+  public Button m_btnPause;
+  public Button m_btnVolumnOn;
+  public Button m_btnVolumnOff;
+  //视频控制器
+  public Slider m_sliderVideo;
+  //音量控制器
+  public Slider m_sliderSource;
+  //当前视频时间
+  public Text m_textTime;
+  public TextMeshProUGUI m_videoName;
+  //视频总时长
+  public Text m_textCount;
+  //音频组件
+  public AudioSource m_source;
+  //需要添加播放器的物体
+  public GameObject m_obj;
+  //是否拿到视频总时长
+  public bool m_isShow;
+  //前进后退的大小
+  public float m_numBer = 20f;
+  //时 分的转换
+  private int hour, mint;
+  private float m_time;
+  private float m_timeCount;
+  private float m_timeCurrent;
+  //视频是否播放完成
+  private bool m_isVideo;
+  bool isFullScreen = false;
+  //隐藏视频控制按钮区域
+  public GameObject m_videoControlArea;
+  protected bool m_isShowUI;
+  //树状图
+  [SerializeField]
+  public TreeView m_Tree;
+  protected Vector2 m_videoAreaSize;
+  protected Vector3 m_videoAreaAnchor;
+  public GameObject m_fullScreenBtn;
+  public GameObject m_unFullScreenBtn;
+
+  void Awake()
+  {
+    //Instance = this;
+    GetVideoName();
+  }
+
+  void Start()
+  {
+    m_image = m_obj.GetComponent<RawImage>();
+    //一定要动态添加这两个组件，要不然会没声音
+    m_vPlayer = m_obj.AddComponent<VideoPlayer>();
+    m_source = m_obj.AddComponent<AudioSource>();
+
+    //这3个参数不设置也会没声音 唤醒时就播放关闭
+    m_vPlayer.playOnAwake = false;
+    m_source.playOnAwake = false;
+    m_source.Pause();
+    m_videoControlArea.SetActive(false);
+    //初始化
+    //Init(urlNetWork);
+    m_btnPlay.onClick.AddListener(delegate { OnClick(0); });
+    m_btnPause.onClick.AddListener(delegate { OnClick(1); });
+    m_btnVolumnOn.onClick.AddListener(delegate { OnClick(2); });
+    m_btnVolumnOff.onClick.AddListener(delegate { OnClick(3); });
+    m_sliderSource.value = m_source.volume;
+    //text.text = string.Format("{0:0}%", source.volume * 100);
+    m_sliderSource.onValueChanged.AddListener(delegate { ChangeSource(m_sliderSource.value); });
+    //全屏的默认值
+    m_videoAreaSize = m_obj.GetComponent<RectTransform>().sizeDelta;
+    m_videoAreaAnchor = m_obj.GetComponent<RectTransform>().anchoredPosition3D;
+  }
+
+  void Update()
+  {
+    if (m_vPlayer.isPlaying && m_isShow)
+    {
+      //把图像赋给RawImage
+      m_image.texture = m_vPlayer.texture;
+      //帧数/帧速率=总时长    如果是本地直接赋值的视频，我们可以通过VideoClip.length获取总时长
+      m_sliderVideo.maxValue = (m_vPlayer.frameCount / m_vPlayer.frameRate);
+      m_time = m_sliderVideo.maxValue;
+      hour = (int)m_time / 60;
+      mint = (int)m_time % 60;
+      m_textCount.text = string.Format("{0:D2}:{1:D2}", hour.ToString(), mint.ToString());
+      m_isShow = !m_isShow;
+    }
+
+    if (Mathf.Abs((int)m_vPlayer.time - (int)m_sliderVideo.maxValue) == 0)
+    {
+      m_vPlayer.frame = (long)m_vPlayer.frameCount;
+      m_vPlayer.Pause();
+      m_isVideo = false;
+      return;
+    }
+    else if (m_isVideo && m_vPlayer.isPlaying)
+    {
+      m_time = (float)m_vPlayer.time;
+      hour = (int)m_time / 60;
+      mint = (int)m_time % 60;
+      m_textTime.text = string.Format("{0:D2}:{1:D2}", hour.ToString(), mint.ToString());
+      m_sliderVideo.value = m_time;
+    }
+  }
+
+  /// <summary>
+  /// 获取文件夹下的文件列表
+  /// </summary>
+  /// <param name="path"></param>
+  private void GetVideoName()
+  {
+    string path;
+    Configuration cfg = ConfigManager.GetConfig("AppConfig.xml");
+    cfg.Get("VideoPath", out path);
+    if (!Directory.Exists(path))
+    {
+      Debug.LogError("教学视频路径不存在！");
+      return;
+    }
+    DirectoryInfo dir = new DirectoryInfo(path);
+    m_Tree.Nodes = InitTreeList(dir);
+    m_Tree.gameObject.transform.Find("ScrollRect").GetComponent<ScrollRect>().horizontal = true;
+  }
+
+  /// <summary>
+  /// 初始化视频文件列表
+  /// </summary>
+  private ObservableList<TreeNode<TreeViewItem>> InitTreeList(DirectoryInfo dir)
+  {
+    ObservableList<TreeNode<TreeViewItem>> nodes = new ObservableList<TreeNode<TreeViewItem>>();
+    FileInfo[] files = dir.GetFiles();
+    for (int i = 0; i < files.Length; i++)
+    {
+      FileInfo file = files[i];
+      TreeViewItem item = new CustomTreeViewItem(file.Name, null, file.FullName);
+      TreeNode<TreeViewItem> node = new TreeNode<TreeViewItem>(item, null);
+      nodes.Add(node);
+    }
+
+    DirectoryInfo[] childDirList = dir.GetDirectories();
+    for (int i = 0; i < childDirList.Length; i++)
+    {
+      DirectoryInfo childDir = childDirList[i];
+      ObservableList<TreeNode<TreeViewItem>> childDirNodes = InitTreeList(childDir);
+      TreeViewItem item = new CustomTreeViewItem(childDir.Name, null, null);
+      TreeNode<TreeViewItem> childNode = new TreeNode<TreeViewItem>(item, childDirNodes);
+      nodes.Add(childNode);
+    }
+
+    return nodes;
+  }
+
+  /// <summary>
+  /// 播放视频
+  /// </summary>
+  /// <param name="id"></param>
+  public void PlayVideo(string fullName)
+  {
+    Init(fullName);//@"E:\互动教学视频" +@"\" 
+  }
+
+  public void OnSelect(int index, ListViewItem item)
+  {
+    TreeViewComponent componentItem = item as TreeViewComponent;
+    CustomTreeViewItem customItem = componentItem.Item as CustomTreeViewItem;
+    //Debug.Log("Selected: " + index + "; name: " + customItem.Name + "; value: " + customItem.Value + "; data: " + customItem.Data);
+    if (customItem.Data != null)
+    {
+      Init(customItem.Data);
+      m_videoName.text = customItem.Name;
+    }
+  }
+
+  /// <summary>
+  ///     初始化VideoPlayer
+  /// </summary>
+  /// <param name="url"></param>
+  private void Init(string url)
+  {
+    m_isVideo = true;
+    m_isShow = true;
+    m_timeCount = 0;
+    m_timeCurrent = 0;
+    m_sliderVideo.value = 0;
+    //设置为URL模式
+    m_vPlayer.source = VideoSource.Url;
+    //设置播放路径
+    m_vPlayer.url = url;
+    //在视频中嵌入的音频类型
+    m_vPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
+
+    //把声音组件赋值给VideoPlayer
+    m_vPlayer.SetTargetAudioSource(0, m_source);
+    m_vPlayer.controlledAudioTrackCount = 1;
+    m_vPlayer.IsAudioTrackEnabled(0);
+    //当VideoPlayer全部设置好的时候调用
+    m_vPlayer.prepareCompleted += Prepared;
+    //启动播放器
+    m_vPlayer.Prepare();
+    // player.Play();
+  }
+
+  /// <summary>
+  ///     改变音量大小
+  /// </summary>
+  /// <param name="value"></param>
+  public void ChangeSource(float value)
+  {
+    m_source.volume = value;
+    // text.text = string.Format("{0:0}%", value * 100);
+  }
+
+
+  /// <summary>
+  ///     改变视频进度
+  /// </summary>
+  /// <param name="value"></param>
+  public void ChangeVideo()
+  {
+    if (m_vPlayer.isPrepared)
+    {
+      m_vPlayer.time = (long)m_sliderVideo.value;
+
+      //Debug.Log((long)value);
+      //Debug.Log("VideoPlayer Time:" + m_vPlayer.time);
+      m_time = (float)m_vPlayer.time;
+      hour = (int)m_time / 60;
+      mint = (int)m_time % 60;
+      m_textTime.text = string.Format("{0:D2}:{1:D2}", hour.ToString(), mint.ToString());
+    }
+    if (m_isVideo == false)
+    {
+      m_isVideo = true;
+    }
+    m_vPlayer.Play();
+  }
+
+  private void OnClick(int num)
+  {
+    switch (num)
+    {
+      case 0:
+        m_vPlayer.Play();
+        m_btnPlay.gameObject.SetActive(false);
+        m_btnPause.gameObject.SetActive(true);
+        Time.timeScale = 1;
+        break;
+      case 1:
+        m_vPlayer.Pause();
+        m_btnPlay.gameObject.SetActive(true);
+        m_btnPause.gameObject.SetActive(false);
+        Time.timeScale = 0;
+        break;
+      case 2:
+        m_source.volume = 0;
+        m_btnVolumnOn.gameObject.SetActive(false);
+        m_btnVolumnOff.gameObject.SetActive(true);
+        break;
+      case 3:
+        m_source.volume = m_sliderSource.value;
+        m_btnVolumnOn.gameObject.SetActive(true);
+        m_btnVolumnOff.gameObject.SetActive(false);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void Prepared(VideoPlayer player)
+  {
+    player.Play();
+  }
+
+  /// <summary>
+  /// 当鼠标进入到下方进度条区域时显示进度条
+  /// </summary>
+  public void OnControllAreaPointEnter()
+  {
+    if (!m_isShowUI)
+    {
+      m_videoControlArea.SetActive(true);
+      m_isShowUI = true;
+    }
+  }
+
+  /// <summary>
+  /// 当鼠标离开下方进度条区域时隐藏进度条
+  /// </summary>
+  public void OnControllAreaPointExit()
+  {
+    if (m_isShowUI)
+    {
+      m_videoControlArea.SetActive(false);
+      m_isShowUI = false;
+    }
+  }
+
+  public void OnFullScreenBtnClick()
+  {
+    if (!isFullScreen && m_vPlayer.isPrepared)
+    {
+      var rt = m_image.GetComponent<RectTransform>();
+      RectTransform fullScreen = GameObject.Find("MainUI").GetComponent<RectTransform>();
+      //m_image.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
+      rt.localScale = new Vector3(fullScreen.rect.width / rt.rect.width, fullScreen.rect.height / rt.rect.height, 0);
+      rt.position = fullScreen.position;
+      isFullScreen = true;
+      m_fullScreenBtn.SetActive(false);
+      m_unFullScreenBtn.SetActive(true);
+    }
+    else
+    {
+      m_image.GetComponent<RectTransform>().localScale = Vector3.one;
+      m_image.GetComponent<RectTransform>().anchoredPosition3D = m_videoAreaAnchor;
+      isFullScreen = false;
+      m_fullScreenBtn.SetActive(true);
+      m_unFullScreenBtn.SetActive(false);
+    }
+
+  }
+
+  public void OnSelectTab(int id)
+  {
+    if (id == 4)
+    {
+      //m_tree.SelectNode(m_tree.DataSource[0].Node);
+      if (m_Tree.SelectedNode != null)
+      {
+        m_Tree.DeselectNode(m_Tree.SelectedNode);
+      }
+    }
+  }
+
+}

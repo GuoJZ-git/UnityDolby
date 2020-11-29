@@ -1,0 +1,112 @@
+<stage Page="0" Count="20">
+  <Init/>
+  <Assets>
+    <Pic2D id="背景" scale="(1.00, 1.00)">
+      <frame file="中幼新logo_0526"/>
+    </Pic2D>
+    <Pic2D id="选对了" scale="(1.00, 1.00)">
+      <frame file="f25"/>
+      <frame file="f26"/>
+      <frame file="f27"/>
+    </Pic2D>
+    <Pic2D id="题图" scale="(0.80, 0.80)">
+      <frame file="f68"/>
+    </Pic2D>
+    <Pic2D id="题图1" scale="(0.80, 0.80)">
+      <frame file="f69"/>
+    </Pic2D>
+    <Pic2D id="箭头图片" scale="(1.00, 1.00)">
+      <frame file="f22"/>
+    </Pic2D>
+    <Pic2D id="线图片" scale="(1.00, 1.00)">
+      <frame file="f23"/>
+    </Pic2D>
+    <Pic2D id="语音开关" scale="(1.00, 1.00)">
+      <frame file="f30"/>
+      <frame file="f29"/>
+    </Pic2D>
+    <Pic2D id="人头图片" scale="(1.00, 1.00)">
+      <frame file="f101"/>
+    </Pic2D>
+    <Pic2D id="人身图片" scale="(1.00, 1.00)">
+      <frame file="f111"/>
+    </Pic2D>
+    <Pic2D id="左手图片" scale="(1.00, 1.00)">
+      <frame file="f71"/>
+    </Pic2D>
+    <Pic2D id="右手图片" scale="(1.00, 1.00)">
+      <frame file="f91"/>
+    </Pic2D>
+    <Pic2D id="烟雾图片" scale="(1.00, 1.00)">
+      <frame file="f81"/>
+    </Pic2D>
+    <Pic2D id="关闭" scale="(1.00, 1.00)">
+      <frame file="f251"/>
+      <frame file="f261"/>
+    </Pic2D>
+    <Pic2D id="y1" scale="(0.50, 0.50)">
+      <frame file="f67"/>
+      <frame file="f61"/>
+    </Pic2D>
+    <Pic2D id="y2" scale="(0.50, 0.50)">
+      <frame file="f66"/>
+      <frame file="f59"/>
+    </Pic2D>
+    <Pic2D id="y11" scale="(0.50, 0.50)">
+      <frame file="f61"/>
+    </Pic2D>
+    <Pic2D id="y22" scale="(0.50, 0.50)">
+      <frame file="f59"/>
+    </Pic2D>
+    <Pic2D id="home" scale="(1.00, 1.00)">
+      <frame file="f13"/>
+      <frame file="f12"/>
+    </Pic2D>
+    <Pic2D id="看一看" scale="(0.50, 0.50)">
+      <frame file="f10"/>
+      <frame file="f11"/>
+    </Pic2D>
+    <Pic2D id="玩一玩" scale="(0.50, 0.50)">
+      <frame file="f8"/>
+      <frame file="f9"/>
+    </Pic2D>
+  </Assets>
+  <Events>
+    <OnClick id="执行">
+      <run_event event="Init" mode="0"/>
+    </OnClick>
+    <OnClick id="播放音乐文件">
+      <play_music file="1740625137"/>
+      <add_button id="关闭" asset="关闭" layer="11" x="1700" y="-100" event="关闭" />
+    </OnClick>
+    <OnClick id="停止音乐">
+      <stop_music/>
+      <add_button id="关闭" asset="关闭" layer="11" x="1700" y="-100" event="关闭" />
+    </OnClick>
+    <OnClick id="播放语音文件">
+      <play_audio file="f0"/>
+      <add_button id="关闭" asset="关闭" layer="11" x="1700" y="-100" event="关闭" />
+    </OnClick>
+    <OnClick id="播放音效文件">
+      <play_sound file="zuoyou"/>
+      <add_button id="关闭" asset="关闭" layer="11" x="1700" y="-100" event="关闭" />
+    </OnClick>
+    <OnClick id="播放视频">
+      <play_movie file="00010"/>
+      <add_button id="关闭" asset="关闭" layer="11" x="1700" y="-100" event="关闭" />
+    </OnClick>
+    <OnClick id="停止视频">
+      <stop_movie/>
+    </OnClick>
+    <OnClick id="显示关闭按钮">
+      <add_button id="关闭" asset="关闭" layer="11" x="1800" y="-280" event="关闭" />      
+    </OnClick>
+    <OnClick id="关闭">
+      <stop_music/>
+      <stop_movie/>
+      <hide layer="10" _id="" />
+      <hide layer="11" _id="" />
+      
+    </OnClick>
+  </Events>
+</stage>

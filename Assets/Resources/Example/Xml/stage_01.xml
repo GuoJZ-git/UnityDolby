@@ -1,0 +1,72 @@
+<stage Page="1" Count="4">
+  <Init>
+    <show_pic id="背景" asset="背景" layer="0" x="0" y="0" angle="0" />
+    <show_button id="home" asset="home" layer="2" x="40" y="51" event="home" />
+    <show_button id="看一看" asset="看一看" layer="2" x="246" y="290" event="看一看" />
+    <show_button id="玩一玩" asset="玩一玩" layer="2" x="554" y="290" event="玩一玩" />
+  </Init>
+  <Assets>
+    <Pic2D id="背景" scale="(1.00, 1.00)">
+      <frame file="f7" />
+    </Pic2D>
+    <Pic2D id="home" scale="(1.00, 1.00)">
+      <frame file="f13" />
+      <frame file="f12" />
+    </Pic2D>
+    <Pic2D id="看一看" scale="(0.50, 0.50)">
+      <frame file="f10" />
+      <frame file="f11" />
+    </Pic2D>
+    <Pic2D id="玩一玩" scale="(0.50, 0.50)">
+      <frame file="f8" />
+      <frame file="f9" />
+    </Pic2D>
+  </Assets>
+  <Events>
+    <OnClick id="home">
+      <load_page page="0" />
+    </OnClick>
+    <OnClick id="看一看">
+      <load_page page="11" />
+    </OnClick>
+    <OnClick id="玩一玩">
+      <load_page page="21" />
+    </OnClick>
+  </Events>
+  <样例>
+    <!--载入页面-->
+    <load_page page="0" />
+    <!--播放音乐文件-->
+    <play_music file="音乐文件" />
+    <!--停止音乐-->
+    <stop_music />
+    <!--播放语音文件-->
+    <play_audio file="语音文件" />
+    <!--显示图片……载入资源，并显示-->
+    <show_pic id="图片ID" asset="资源ID" layer="0" x="0" y="0" angle="0" />
+    <!--显示图片……载入序列帧，并显示-->
+    <show_ani id="序列帧ID" asset="资源ID" layer="0" x="0" y="0" fps="0" repeat="1" wait="False" close="False" />
+    <!--隐藏图片-->
+    <hide layer="0" _id="" />
+    <!--设置图片……换图-->
+    <set_pic _id="要设置的图片ID" asset="资源ID" />
+    <!--设置图片……闪烁-->
+    <flash_pic _id="要闪烁的图片ID" time_on="0" time_off="0" />
+    <!--设置图片……摆动-->
+    <swing_pic _id="要设置的图片ID" center="(0.0, 0.0, 0.0)" angle_from="0" angle_to="0" />
+    <!--设置图片……移动-->
+    <move_pic _id="要移动的图片ID" pos="(0.0, 0.0)" />
+    <!--设置图片……淡出-->
+    <fadeout_pic _id="要淡出的图片ID" duration="0.50" />
+    <!--切换图片显示-->
+    <show_toggle id="按钮ID" asset="资源ID" layer="0" x="0" y="0" angle="0" event="点击事件" />
+    <!--显示按钮……载入资源，并显示-->
+    <show_button id="按钮ID" asset="资源ID" layer="0" x="0" y="0" event="点击事件" />
+    <!--设置事件-->
+    <set_event _id="已显示的图片ID" event="事件名称" />
+    <!--等待-->
+    <wait time="0" />
+    <!--退出APP-->
+    <exit />
+  </样例>
+</stage>

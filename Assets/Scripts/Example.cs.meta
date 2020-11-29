@@ -1,0 +1,27 @@
+fileFormatVersion: 2
+guid: 66a46c1c78a22054497aaa07096288e5
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - clipMusic: {instanceID: 0}
+  - clipBird: {fileID: 8300000, guid: 9e482fd9661d35e4fbbb9207a956d3ba, type: 3}
+  - objShow: {instanceID: 0}
+  - runBtn: {instanceID: 0}
+  - play_voice_FL: {instanceID: 0}
+  - play_voice_FC: {instanceID: 0}
+  - play_voice_FR: {instanceID: 0}
+  - play_voice_CL: {instanceID: 0}
+  - play_voice_CC: {instanceID: 0}
+  - play_voice_CR: {instanceID: 0}
+  - play_voice_RL: {instanceID: 0}
+  - play_voice_RC: {instanceID: 0}
+  - play_voice_RR: {instanceID: 0}
+  - play_sound: {instanceID: 0}
+  - play_mov: {instanceID: 0}
+  - play_bird: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

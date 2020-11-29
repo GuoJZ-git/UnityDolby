@@ -1,0 +1,26 @@
+1
+00:00:00,950 --> 00:00:07,140
+<i>*patriotic flute music*</i>
+
+2
+00:00:07,140 --> 00:00:13,019
+<B>Bold Patriotic Statements</B>
+
+3
+00:00:13,019 --> 00:00:18,660
+Obviously <color=#00ff33ff>this</color> subtitle file doesn't actually
+belong with this video.
+
+4
+00:00:18,660 --> 00:00:26,770
+It's a good idea to buy bonds is what Bugs
+is trying to get across here.
+
+5
+00:00:26,770 --> 00:00:36,770
+<b><i>Any Bonds Today</i> is a public domain cartoon.</b>
+
+6
+00:00:36,770 --> 00:00:39,930
+This is the end of the .srt file.
+
